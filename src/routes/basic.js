@@ -2,7 +2,13 @@ const express = require('express')
 const basicRoutes = express.Router()
 const logging = require('../utils/logging')
 
-// simple 1 query command
+const basicRouteMap = {}
+
+registerBasicCommand = (key, command) => {
+    basicRouteMap[key] = command
+}
+
+// simple no input query command
 basicRoutes.get('/', async (req, res) => {
     if (!req.query.command) {
         
@@ -13,9 +19,19 @@ basicRoutes.get('/', async (req, res) => {
     }
 
     logging("Basic with command param: " + req.query.command);
+
+    const redirect = basicRouteMap[req.query.command]()
         
     res.status(200)
-    res.send("<!DOCTYPE html><html><body><script>history.back()</script></body></html>")
+    if (redirect && typeof redirect == "string") {
+        res.send("<!DOCTYPE html><html><body><script>window.location.replace(" + redirect + ")</script></body></html>")
+    }
+    else {
+        res.send("<!DOCTYPE html><html><body><script>history.back()</script></body></html>")
+    }
 })
 
-module.exports = basicRoutes
+module.exports = {
+    basicRoutes,
+    registerBasicCommand
+}

@@ -1,5 +1,5 @@
 {
-  "name": "hotkey-server",
+  "name": "shortcut-server",
   "version": "1.0.0",
   "description": "Server that responds to bookmarked urls",
   "main": "index.js",
