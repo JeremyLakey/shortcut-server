@@ -1,8 +1,8 @@
-const config = require('../configs/settings.json')
-const loggingMode = require('./loggingmode')
+import config from '../configs/settings.json' with {type: "json"}
+import {loggingMode} from './loggingmode.js'
 
 const logging = (text) => {
     if (config.debug || loggingMode.loggingMode) console.log(text);
 }
 
-module.exports = logging
+export default logging

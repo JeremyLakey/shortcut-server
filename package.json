@@ -2,14 +2,16 @@
   "name": "shortcut-server",
   "version": "1.0.0",
   "description": "Server that responds to bookmarked urls",
-  "main": "index.js",
+  "main": "shortcut.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/index.js"
+    "start": "node ./src/example/index.js"
   },
   "author": "Jeremy Lakey",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.21.1"
+    "express": "^4.21.1",
+    "pug": "^3.0.3"
   }
 }

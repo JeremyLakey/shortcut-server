@@ -1,12 +1,8 @@
 
 
 var loggingMode = false;
+export var loggingMode;
 
-const setLoggingMode = (mode) => {
+export const setLoggingMode = (mode) => {
     loggingMode = mode;
-}
-
-module.exports = {
-    loggingMode,
-    setLoggingMode
 }
