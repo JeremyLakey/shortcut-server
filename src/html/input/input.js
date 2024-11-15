@@ -3,10 +3,10 @@
 const urlParams = new URLSearchParams(window.location.search);
 
 const command = urlParams.get("command")
-var context;
+var config;
 
-const getContext = async () => {
-    const result = await fetch(window.location.origin + '/input/context', {
+const getConfig = async () => {
+    const result = await fetch(window.location.origin + '/input/config', {
             method: 'POST',
             headers: {
                 'Accept':'application/json',
@@ -16,9 +16,9 @@ const getContext = async () => {
         }
     );
 
-    context = await result.json()
+    config = await result.json()
 
-    console.log("Context:", context);
+    console.log("Config:", config);
 }
 
 const submit = async () => {
@@ -38,4 +38,4 @@ const submit = async () => {
 }
 
 
-getContext()
+getConfig()

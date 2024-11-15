@@ -9,7 +9,7 @@ import logging from './utils/logging.js'
 import {setLoggingMode} from './utils/loggingmode.js'
 
 import path from 'path';
-import basicRoutes from './routes/basic.js';
+import basicRoutes from './routes/basic/basic.js';
 import inputRoutes from './routes/input.js';
 
 const startServer = (customPort = undefined, debug = false, customRoutes = undefined) => {

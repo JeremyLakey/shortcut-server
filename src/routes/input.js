@@ -7,17 +7,17 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const inputRouteMap = {};
-const inputContextMap = {};
+const inputConfigMap = {};
 const inputRouteBeforeMap = {};
 
 
-const registerInputCommand = (key, command, context = undefined, before = undefined) => {
-    inputRouteMap[key] = command;
-    if (context) {
-        inputContextMap[key] = context
+const registerInputCommand = (key, command, config = undefined, before = undefined) => {
+    inputRouteMap[key.toLowerCase()] = command;
+    if (config) {
+        inputConfigMap[key.toLowerCase()] = config
     }
     if (before) {
-        inputRouteBeforeMap[key] = before
+        inputRouteBeforeMap[key.toLowerCase()] = before
     }
 }
 
@@ -91,16 +91,16 @@ inputRoutes.post('/',[blockExternal, express.json()], async (req, res) => {
     }
 })
 
-// grabs the context object for a command
-inputRoutes.post('/context', [blockExternal, express.json()], async (req, res) => {
+// grabs the config object for a command
+inputRoutes.post('/config', [blockExternal, express.json()], async (req, res) => {
     if (!req.body.command) {
         logging("Bad Request: missing command body parameter");
         res.status(400);
         res.send({err:"Bad Request: missing command body parameter"});
         return;
     }
-    if (!inputContextMap[req.body.command]) {
-        logging("Context not found: input command had no context object: " + req.body.command);
+    if (!inputConfigMap[req.body.command]) {
+        logging("Context not found: input command had no config object: " + req.body.command);
         res.status(404);
         res.send({});
         return;
@@ -109,10 +109,10 @@ inputRoutes.post('/context', [blockExternal, express.json()], async (req, res) =
     logging(req.ip)
     logging(req.ips)
 
-    logging(inputContextMap[req.body.command])
+    logging(inputConfigMap[req.body.command])
 
     res.status(200);
-    res.send(JSON.stringify(inputContextMap[req.body.command]))
+    res.send(JSON.stringify(inputConfigMap[req.body.command]))
 })
 
 export default {
