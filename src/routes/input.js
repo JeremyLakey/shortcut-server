@@ -6,9 +6,23 @@ import blockExternal from '../utils/blockexternal.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+import fs from'fs';
+
 const inputRouteMap = {};
 const inputConfigMap = {};
 const inputRouteBeforeMap = {};
+
+let defaultCss;
+
+fs.readFile('./src/html/input/inputDefault.css', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+  
+    console.log(data);
+    defaultCss = data;
+  });
 
 
 const registerInputCommand = (key, command, config = undefined, before = undefined) => {
@@ -49,11 +63,7 @@ inputRoutes.get('/', blockExternal, async (req, res) => {
         return;
     }
 
-    logging("Basic with command param: " + req.query.command);
-    
-    if (inputRouteBeforeMap[req.query.command]) {
-        inputRouteBeforeMap[req.query.command]()
-    }
+    logging("Input with command param: " + req.query.command);
         
     // show the page
     const __filename = fileURLToPath(import.meta.url);
@@ -106,13 +116,26 @@ inputRoutes.post('/config', [blockExternal, express.json()], async (req, res) =>
         return;
     }
 
-    logging(req.ip)
-    logging(req.ips)
+    
+    var configResult = inputConfigMap[req.body.command];
 
-    logging(inputConfigMap[req.body.command])
+    if (inputRouteBeforeMap[req.body.command]) {
+        let beforeResult = inputRouteBeforeMap[req.body.command]();
+        if (beforeResult) {
+            configResult = beforeResult;
+        }
+    }
+
+    if (typeof configResult === "undefined") {
+        configResult = {}
+    }
+
+    if (!configResult.style) {
+        configResult.style = defaultCss;
+    }
 
     res.status(200);
-    res.send(JSON.stringify(inputConfigMap[req.body.command]))
+    res.send(JSON.stringify(configResult))
 })
 
 export default {

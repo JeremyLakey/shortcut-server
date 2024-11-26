@@ -1,0 +1,34 @@
+
+
+html {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+form {
+    margin-top: 30px;
+    display: flexbox;
+}
+
+input {
+    display: block;
+    width: 98%;
+    padding: 5px 20px;
+    margin: auto;
+    background-color: black;
+    border-color: lime;
+    color: lime;
+    font-size: 40px;
+    font-family: "Share Tech Mono", monospace;
+}
+
+input:focus {
+    outline:none;
+}
