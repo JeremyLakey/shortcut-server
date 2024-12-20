@@ -36,7 +36,7 @@ const registerInputCommand = (key, command, config = undefined, before = undefin
 }
 
 // loads the script for the input page
-inputRoutes.get('/script', blockExternal, async (req, res) => {
+inputRoutes.get('/script', async (req, res) => {
     // show the page
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
@@ -48,7 +48,7 @@ inputRoutes.get('/script', blockExternal, async (req, res) => {
 })
 
 // loads the input page and triggers the before action
-inputRoutes.get('/', blockExternal, async (req, res) => {
+inputRoutes.get('/', async (req, res) => {
     if (!req.query.command) {
         
         logging("Bad Request: missing command query parameter");
@@ -76,7 +76,7 @@ inputRoutes.get('/', blockExternal, async (req, res) => {
 })
 
 // submits request body for a command
-inputRoutes.post('/',[blockExternal, express.json()], async (req, res) => {
+inputRoutes.post('/', express.json(), async (req, res) => {
     if (!req.query.command) {
         logging("Bad Request: missing command query parameter");
         res.status(400);
@@ -102,7 +102,7 @@ inputRoutes.post('/',[blockExternal, express.json()], async (req, res) => {
 })
 
 // grabs the config object for a command
-inputRoutes.post('/config', [blockExternal, express.json()], async (req, res) => {
+inputRoutes.post('/config', express.json(), async (req, res) => {
     if (!req.body.command) {
         logging("Bad Request: missing command body parameter");
         res.status(400);

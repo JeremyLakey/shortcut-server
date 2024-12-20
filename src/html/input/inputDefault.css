@@ -3,7 +3,15 @@
 html {
     margin: 0;
     padding: 0;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3), 0 0 10px rgba(255, 255, 255, 0.2), 0 0 15px rgba(255, 255, 255, 0.1);
     background-color: black;
+    
+    animation: anim 3s linear infinite alternate;
+}
+
+body {
+    margin: 0;
+    padding: 0;
 }
 
 div {
@@ -15,18 +23,37 @@ div {
 form {
     margin-top: 30px;
     display: flexbox;
+
+    border-bottom: 4px solid lime;
+    
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
 }
+
+@keyframes anim {
+    from {box-shadow: 0 0 5px rgba(255, 255, 255, 0.3), 
+
+        0 0 10px rgba(255, 255, 255, 0.2), 
+    
+        0 0 15px rgba(255, 255, 255, 0.1)}
+    to {box-shadow: 0 0 10px rgba(255, 255, 255, 0.3), 
+
+        0 0 15px rgba(255, 255, 255, 0.2), 
+    
+        0 0 20px rgba(255, 255, 255, 0.1)}
+  }
 
 input {
     display: block;
-    width: 98%;
+    width: 100%;
     padding: 5px 20px;
     margin: auto;
     background-color: black;
-    border-color: lime;
     color: lime;
     font-size: 40px;
-    font-family: "Share Tech Mono", monospace;
+    font-family: "VT323", monospace;
+    border: none;
 }
 
 input:focus {

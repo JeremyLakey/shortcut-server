@@ -12,9 +12,12 @@ import path from 'path';
 import basicRoutes from './routes/basic/basic.js';
 import inputRoutes from './routes/input.js';
 
+import blockExternal from './utils/blockexternal.js';
+
 const startServer = (customPort = undefined, debug = false, customRoutes = undefined) => {
     setLoggingMode(debug)
-
+    
+    app.use(blockExternal)
     app.use(express.static("public"));
 
     app.use('/basic', basicRoutes.basicRoutes);

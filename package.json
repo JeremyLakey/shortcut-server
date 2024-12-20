@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/example/index.js"
+    "start": "node ./src/example/index.js",
+    "d": "nodemon ./src/example/index.js localhost 8080"
   },
   "author": "Jeremy Lakey",
   "license": "MIT",

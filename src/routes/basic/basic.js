@@ -17,7 +17,7 @@ const registerBasicCommand = (key, command, config = undefined) => {
 }
 
 // simple no input query command
-basicRoutes.get('/', blockExternal, async (req, res) => {
+basicRoutes.get('/', async (req, res) => {
     if (!req.query.command && basicRouteMap[req.query.command.toLowerCase()]) {
         
         logging("Bad Request: missing command query parameter");
