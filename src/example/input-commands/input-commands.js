@@ -1,5 +1,5 @@
 import shortcuts from "../../shortcuts.js";
 
 export const registerAllInputCommands = () => {
-    shortcuts.registerInputCommand("ping", () => console.log("submitted"), {}, () => console.log("before recieved"))
+    shortcuts.registerInputCommand("pong", () => console.log("submitted"), {}, () => console.log("before recieved"))
 }
