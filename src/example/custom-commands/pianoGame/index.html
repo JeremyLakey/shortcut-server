@@ -42,6 +42,9 @@
   </style>
   <script>
     var blackOffsets = [0, 1, 3, 4, 5, 7, 8, 10, 11, 12]
+
+    // first index white or black keys
+    // second index is note of the key from left to right
     var notes = [[65.4, 73.4,82.4,87.3,98.0,110,123.5,130.8,146.8,164.8,174.6,196,220],[69.3,77.8,92.5,103.8,116.5,138.6,155.6,185,207.7,233.1]]
 
     var c = document.getElementById("piano-canvas");
@@ -50,103 +53,70 @@
     var hitCtx = hitC.getContext("2d");
     var event;
     
-    // draw keys
-    ctx.beginPath();
-    hitCtx.beginPath();
-    for (let i = 0; i < 14; i++) {
-        ctx.rect(i * 70 + 2, 1, 70, 200);
-        hitCtx.fillStyle = "rgb(" + i + ",0,0)"
-        hitCtx.fillRect(i * 70 + 2, 1, 70, 200)
-    }
-    ctx.stroke();
-    hitCtx.stroke();
+    
 
-    // draw black keys
-    ctx.beginPath();
-    hitCtx.beginPath();
-    for (let i = 0; i < blackOffsets.length; i++) {
-        ctx.fillRect((70 * blackOffsets[i]) + 2 + 47, 1, 47, 130);
-        hitCtx.fillStyle = "rgb(" + i + ",0,1)"
-        hitCtx.fillRect((70 * blackOffsets[i]) + 2 + 47, 1, 47, 130);
-    }
-    ctx.stroke();
-    hitCtx.stroke();
-
-
-    var score = 0;
-    var gameGoing = false;
-    var currentNote = undefined;
-
-    function getRandomNumber(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    // slight skews it towards black keys, but who cares? What is random?
-    function getRandomNote() {
-        let num = 0 //getRandomNumber(0, notes.length - 1)
-        if (score > 50) {
-            let num = getRandomNumber(0,1);
+    function drawBoard() {
+        // draw keys
+        ctx.beginPath();
+        ctx.fillStyle = "rgb(255,255,255)";
+        for (let i = 0; i < 14; i++) {
+            ctx.fillRect(i * 70 + 2, 1, 70, 200);
+            ctx.rect(i * 70 + 2, 1, 70, 200);
         }
-        let maxy = Math.min(Math.trunc(score / 2) + 3, notes[num].length)
-        console.log(maxy)
-        return [num, getRandomNumber(0, maxy - 1)]; 
+        ctx.stroke();
+
+        // draw black keys
+        ctx.beginPath();
+        ctx.fillStyle = "rgb(0,0,0)";
+        for (let i = 0; i < blackOffsets.length; i++) {
+            ctx.fillRect((70 * blackOffsets[i]) + 2 + 47, 1, 47, 130);
+        }
+        ctx.stroke();
     }
 
-    function listenButton() {
-        if (!gameGoing) {
-            gameGoing = true;
-            document.getElementById("listen").innerText = "listen";
-            document.getElementById("score").innerText = "score: 0";
-            let resetEle = document.getElementById("reset");
-            resetEle.style.display = "inline";
-            resetEle.innerText = "reset";
-            currentNote = getRandomNote();
-            beep(200, notes[currentNote[0]][currentNote[1]], 1, "square")
+    // To detect mouse clicks, we draw a hidden board with different colors for each note that are referenced later. 
+    function drawHitBoard() {
+        hitCtx.beginPath();
+        for (let i = 0; i < 14; i++) {
+            hitCtx.fillStyle = "rgb(" + i + ",0,0)"
+            hitCtx.fillRect(i * 70 + 2, 1, 70, 200)
         }
-        else {
-            beep(200, notes[currentNote[0]][currentNote[1]], 1, "square")
-        }
-    }
+        hitCtx.stroke();
 
-    function resetButton() {
-        score = 0;
-        document.getElementById("score").innerText = "score: 0";
-        currentNote = getRandomNote();
-        beep(200, notes[currentNote[0]][currentNote[1]], 1, "square")
+        // draw black keys
+        hitCtx.beginPath();
+        for (let i = 0; i < blackOffsets.length; i++) {
+            hitCtx.fillStyle = "rgb(" + i + ",0,1)"
+            hitCtx.fillRect((70 * blackOffsets[i]) + 2 + 47, 1, 47, 130);
+        }
+        hitCtx.stroke();
     }
+    
+
+    drawBoard();
+    drawHitBoard();
 
     c.addEventListener('click', (e) => {
         
-        const sty = getComputedStyle(e.srcElement)
+        const sty = getComputedStyle(e.srcElement);
         const mousePos = {
             x: e.clientX - c.offsetLeft,
             y: e.clientY - c.offsetTop
         };
-
-        console.log(mousePos)
 
         
         const pixel = hitCtx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
 
         const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
 
-        console.log(color);
 
-        // click debugging stuff
-        // hitCtx.beginPath();
-        // hitCtx.fillStyle = "red";
-        // hitCtx.arc(mousePos.x, mousePos.y, 10, 0, 2 * Math.PI);
-        // hitCtx.fill()
-        // hitCtx.stroke()
         if (pixel) { 
-            playNote(pixel[2], pixel[0])
-            //beep(200, notes[pixel[2]][pixel[0]], 1, "sawtooth")
+            playNote(pixel[2], pixel[0]);
         }
-        
     })
 
+    // map different keyboard keys to piano keys
     window.addEventListener("keydown", (e) => {
-        console.log(e);
         let key = e.key.toLowerCase();
 
         // handle shift for special characters
@@ -232,7 +202,7 @@
                 break;
 
             case " ":
-                if (gameGoing) beep(200, notes[currentNote[0]][currentNote[1]], 1, "square")
+                if (gameGoing) beep(notes[currentNote[0]][currentNote[1]], 1, "square")
                 else quietRate = .95
                 break;
             case "shift":
@@ -247,7 +217,6 @@
     })
 
     window.addEventListener("keyup", (e) => {
-        console.log(e);
         let key = e.key.toLowerCase();
 
         // handle shift for special characters
@@ -272,51 +241,140 @@
     })
 
 
+    /*
+        PERFECT PITCH GAME MODE
+    */
+    
+    var score = 0;
+    var gameGoing = false;
+    var currentNote = undefined;
+    var tuneMode = true; // keep going until you get it right, but lose points. On by default
 
-    // most of this sound code from https://stackoverflow.com/questions/879152/how-do-i-make-javascript-beep
-    var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+    var correctNote = "rgba(0,255,0, 0.5)";
+    var wrongNote = "rgba(255,0,0, 0.5)";
 
-    var quietRate = .90;
-    var doQuiet = true;
+    function getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-    var tuneMode = true; // keep going until you get it right, but lose points
+    // starts with a few of the white keys, then adds more every few points
+    // then eventually adds all the black keys after 50 points
+    // slight skews it towards black keys, but who cares? What even is true random?
+    function getRandomNote() {
+        let num = 0;
+        if (score > 50) {
+            let num = getRandomNumber(0,1);
+        }
+        let maxy = Math.min(Math.trunc(score / 2) + 3, notes[num].length);
+        return [num, getRandomNumber(0, maxy - 1)]; 
+    }
+
+    function listenButton() {
+        if (!gameGoing) {
+            gameGoing = true;
+            document.getElementById("listen").innerText = "listen";
+            document.getElementById("score").innerText = "score: 0";
+            let resetEle = document.getElementById("reset");
+            resetEle.style.display = "inline";
+            resetEle.innerText = "reset";
+            currentNote = getRandomNote();
+            beep(notes[currentNote[0]][currentNote[1]], 1, "square");
+        }
+        else {
+            beep(notes[currentNote[0]][currentNote[1]], 1, "square");
+        }
+    }
+
+    function resetButton() {
+        score = 0;
+        document.getElementById("score").innerText = "score: 0";
+        currentNote = getRandomNote();
+        beep(notes[currentNote[0]][currentNote[1]], 1, "square");
+    }
+
+    var hitTimeout = undefined
+
+    // high lights specific key during game mode
+    function drawGameHit(num1, num2, color) {
+        if (num1 === 0) {
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.fillRect(num2 * 70 + 2, 1, 70, 200);
+            ctx.stroke();
+        }
+        else if (num1 === 1) {
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.fillRect((70 * blackOffsets[num2]) + 2 + 47, 1, 47, 130);
+            ctx.stroke();
+        }
+        if (hitTimeout) {
+            clearTimeout(hitTimeout)
+        }
+        hitTimeout = setTimeout(() => {
+                drawBoard();
+            }, 180)
+    }
+
 
     function playNote(num1, num2) {
         if (gameGoing) {
             if (num1 === currentNote[0] && num2 === currentNote[1]) {
-                beep(200, notes[num1][num2], 1, "square", setTimeout(() => beep(200, 500, 1, "triangle"), 300));
+                // hit correct note
+                beep(notes[num1][num2], 1, "square", setTimeout(() => beep(500, 1, "triangle"), 300));
                 score += 1;
+                drawGameHit(num1, num2, correctNote);
                 
                 currentNote = getRandomNote();
-                setTimeout(() => beep(200, notes[currentNote[0]][currentNote[1]], 1, "square"), 900)
+                setTimeout(() => beep(notes[currentNote[0]][currentNote[1]], 1, "square"), 900);
             }
             else {
+                // hit wrong note
+                drawGameHit(num1, num2, wrongNote);
                 score -= 1;
                 if (score < 0) score = 0;
                 if (!tuneMode) {
-                    
-                    beep(200, notes[num1][num2], 1, "square", setTimeout(() => beep(200, 500, 1, "sawtooth"), 300));
+                    // get a new note
+                    beep(notes[num1][num2], 1, "square", setTimeout(() => beep(500, 1, "sawtooth"), 300));
                     currentNote = getRandomNote();
-                    setTimeout(() => beep(200, notes[currentNote[0]][currentNote[1]], 1, "square"), 900)
+                    setTimeout(() => beep(notes[currentNote[0]][currentNote[1]], 1, "square"), 900);
                 }
                 else {
-                    beep(200, notes[num1][num2], 1, "square")
+                    // keep going until they find the right note.
+                    beep(notes[num1][num2], 1, "square");
                 }
             }
             
             document.getElementById("score").innerText = "score: " + score;
         }
         else {
-            beep(200, notes[num1][num2], 1, "square");
+            // not playing the game, so just play the note
+            beep(notes[num1][num2], 1, "square");
+            
+            drawGameHit(num1, num2, correctNote);
         }
     }
 
-    //duration of the tone in milliseconds. Default is 500
+    /*
+        Sound Utils
+    */
+
+
+    // most of this sound code from https://stackoverflow.com/questions/879152/how-do-i-make-javascript-beep
+    var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+
+    // multiplier for audio damping. 
+    var quietRate = .90;
+
+    // when active, audio dampens until it disappears. 
+    var doQuiet = true;
+
+
     //frequency of the tone in hertz. default is 440
     //volume of the tone. Default is 1, off is 0.
     //type of tone. Possible values are sine, square, sawtooth, triangle, and custom. Default is sine.
     //callback to use on end of tone
-    function beep(duration, frequency, volume, type, callback) {
+    function beep(frequency, volume, type, callback) {
         var oscillator = audioCtx.createOscillator();
         var gainNode = audioCtx.createGain();
         
@@ -332,7 +390,7 @@
 
         let quietDown = () => {
             gainNode.gain.value *= quietRate;
-            if(gainNode < .01) oscillator.stop()
+            if(gainNode < .01) oscillator.stop();
             else {
                 setTimeout(() => {
                     quietDown();
@@ -340,10 +398,7 @@
             }
         }
 
-        setTimeout(quietDown, 10)
-
-        
-        // oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
+        setTimeout(quietDown, 10);
     };
 
     

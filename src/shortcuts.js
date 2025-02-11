@@ -32,7 +32,7 @@ const startServer = (customPort = undefined, debug = false, customRoutes = undef
     app.set('trust proxy', true)
 
     app.listen(port, async () => {
-        logging(`Turning machine Api listening on ${port}`);
+        logging(`Shortcut Api listening on ${port}`);
     })
 }
 
